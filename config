@@ -1,0 +1,275 @@
+#!/usr/bin/python
+import urwid
+import subprocess
+import os
+
+games = {"42":"42.obj",
+"sky":"sky.obj",
+"dodecahedron":"dodecahedron.obj",
+"octahedron":"octahedron.obj",
+"Bulbasaur":"Bulbasaur.obj",
+"dragon":"dragon.obj",
+"pikachu":"pikachu.obj",
+"airboat":"airboat.obj",
+"geogreymon":"geogreymon.obj",
+"ponyta":"ponyta.obj",
+"angemon":"angemon.obj",
+"gourd":"gourd.obj",
+"squared_based_pyramid":"squared_based_pyramid.obj",
+"angewomon":"angewomon.obj",
+"head":"head.obj",
+"squirtle":"squirtle.obj",
+"bunny":"bunny.obj",
+"ho-oh":"ho-oh.obj",
+"stall":"stall.obj",
+"cessna":"cessna.obj",
+"icosahedron":"icosahedron.obj",
+"suicune":"suicune.obj",
+"chair":"chair.obj",
+"imac":"imac.obj",
+"teapot":"teapot.obj",
+"charizard":"charizard.obj",
+"lamp":"lamp.obj",
+"teapot2":"teapot2.obj",
+"cherubimon":"cherubimon.obj",
+"lugia":"lugia.obj",
+"teddybear":"teddybear.obj",
+"cube":"cube.obj",
+"mew":"mew.obj",
+"terriermon":"terriermon.obj",
+"diamond":"diamond.obj",
+"mewtwo":"mewtwo.obj",
+"tetrahedron":"tetrahedron.obj",}
+text = {"42":"poney.bmp",
+"sky":"star.bmp",
+"dodecahedron":"poney.bmp",
+"octahedron":"poney.bmp",
+"Bulbasaur":"green.bmp",
+"dragon":"fire.bmp",
+"pikachu":"yellow.bmp",
+"airboat":"poney.bmp",
+"geogreymon":"poney.bmp",
+"ponyta":"fire.bmp",
+"angemon":"poney.bmp",
+"gourd":"poney.bmp",
+"squared_based_pyramid":"poney.bmp",
+"angewomon":"poney.bmp",
+"head":"poney.bmp",
+"squirtle":"water.bmp",
+"bunny":"poney.bmp",
+"ho-oh":"fire.bmp",
+"stall":"poney.bmp",
+"cessna":"green.bmp",
+"icosahedron":"poney.bmp",
+"suicune":"water.bmp",
+"chair":"poney.bmp",
+"imac":"poney.bmp",
+"teapot":"poney.bmp",
+"charizard":"fire.bmp",
+"lamp":"poney.bmp",
+"teapot2":"green.bmp",
+"cherubimon":"poney.bmp",
+"lugia":"poney.bmp",
+"teddybear":"poney.bmp",
+"cube":"poney.bmp",
+"mew":"water.bmp",
+"terriermon":"poney.bmp",
+"diamond":"water.bmp",
+"mewtwo":"poney.bmp",
+"tetrahedron":"poney.bmp",}
+
+positions = {
+"posx":"0",
+"posy":"0",
+"posz":"0",
+"rotx":"0",
+"roty":"0",
+"rotz":"0",
+}
+vari = 0
+
+src = "./objs/"
+
+listbox2 = []
+liste = {}
+loop2 = 0
+view2 = 0
+items2 = []
+
+
+class ItemWidget (urwid.WidgetWrap):
+
+    def __init__ (self, id, description):
+        self.id = id
+        self.content = description
+        self.item = [
+            ('fixed', 15, urwid.Padding(urwid.AttrWrap(
+                urwid.Text('%s:' % str(id)), 'body', 'focus'), left=2)),
+            urwid.AttrWrap(urwid.Text('%s' % description), 'body', 'focus'),
+        ]
+        w = urwid.Columns(self.item)
+        self.__super.__init__(w)
+
+    def refresh (self, id, newdesc):
+        self.content = newdesc
+        self.item = [
+            ('fixed', 15, urwid.Padding(urwid.AttrWrap(
+                urwid.Text('%s:' % str(id)), 'body', 'focus'), left=2)),
+            urwid.AttrWrap(urwid.Text('%s' % newdesc), 'body', 'focus'),
+        ]
+        w = urwid.Columns(self.item)
+        self.__super.__init__(w)
+
+    def selectable (self):
+        return True
+
+    def keypress(self, size, key):
+        return key
+
+def main ():
+    palette = [
+        ('body','dark cyan', '', 'standout'),
+        ('focus','dark red', '', 'standout'),
+        ('head','light red', 'black'),
+        ]
+
+    def keystroke2 (input):
+        if input in ('q', 'Q'):
+            raise urwid.ExitMainLoop()
+
+        if input is 'enter':
+            focus = listbox2.get_focus()[0].content
+            #print focus
+            raise urwid.ExitMainLoop()
+        if input is 'right':
+            global vari
+            global liste
+            global items2
+            if (int(liste[str(vari)][listbox2.get_focus()[0].id]) < 9) :
+                liste[str(vari)][listbox2.get_focus()[0].id] = str(int(liste[str(vari)][listbox2.get_focus()[0].id]) + 1)
+                yo = 0
+                for l in liste[str(vari)]:
+                    if (l != "name" and l != 'tex'):
+                        items2[yo].refresh(l, liste[str(vari)][l])
+                        yo += 1
+        if input is 'left':
+            global vari
+            global liste
+            global items2
+            if (int(liste[str(vari)][listbox2.get_focus()[0].id]) > -9) :
+                liste[str(vari)][listbox2.get_focus()[0].id] = str(int(liste[str(vari)][listbox2.get_focus()[0].id]) - 1)
+                yo = 0
+                for l in liste[str(vari)]:
+                    if (l != "name" and l != 'tex'):
+                        items2[yo].refresh(l, liste[str(vari)][l])
+                        yo += 1
+            # global loop2
+            # k = []
+            # k.append('down')
+            # loop2.process_input(k)
+
+    def keystroke (input):
+        if input in ('q', 'Q'):
+            raise urwid.ExitMainLoop()
+
+        if input is 'enter':
+            focus = listbox.get_focus()[0].content
+            view.set_header(urwid.AttrWrap(urwid.Text(focus + " selected"), 'head'))
+            global vari
+            global liste
+            liste[str(vari)] =  { "name":src + games[focus],"posx":"0","posy":"0","posz":"0","rotx":"0","roty":"1","rotz":"0","tex":text[focus]}
+            properties = positions
+            global items2
+            items2 = []
+            for l in liste[str(vari)]:
+                if l != "name" and l != 'tex':
+                    items2.append(ItemWidget(l, liste[str(vari)][l]))
+            global listbox2
+            listbox2 = urwid.ListBox(urwid.SimpleListWalker(items2))
+            global view2
+            view2 = urwid.Frame(urwid.AttrWrap(listbox2, 'body'), header=header)
+            global loop2
+            loop2 = urwid.MainLoop(view2, palette, unhandled_input=keystroke2)
+            loop2.run()
+            vari = vari + 1
+
+        if input in ('r', 'R'):
+            focus = listbox.get_focus()[0].content
+            try:
+                os.path.isfile(src + games[focus])
+                f = open('./srcs/main.c', 'w')
+                f1 = open('./.templates/1')
+                f2 = open('./.templates/2')
+                f3 = open('./.templates/3')
+                buff1 = f1.read()
+                buff2 = f2.read()
+                buff3 = f3.read()
+#                print buff1
+#                buff1 = buff1[0:-1]
+                f.write(buff1)
+                global liste
+                for key in liste:
+					gothere = "  ssize_t         modelid" + key + ";    ssize_t         entityid" + key + ";    ssize_t         textureid" + key + ";   modelid" + key + " = create_model(\"" + liste[key]["name"] + "\");  textureid" + key + " = create_texture(\"textures/"+ liste[key]["tex"] +"\");  entityid" + key + " = create_entity(modelid" + key + ", programid, textureid" + key + ");"
+					f.write(gothere)
+					if ('-' in liste[key]["posx"]):
+						c1 = '-'
+						liste[key]["posx"] = str(int(liste[key]["posx"]) * -1)
+					else:
+						c1 = ''
+					if ('-' in liste[key]["posy"]):
+						c2 = '-'
+						liste[key]["posy"] = str(int(liste[key]["posy"]) * -1)
+					else:
+						c2 = ''
+					if ('-' in liste[key]["posz"]):
+						liste[key]["posz"] = str(int(liste[key]["posz"]) * -1)
+						c3 = '-'
+					else:
+						c3 = ''
+					f.write("entity_translation_x(entityid" + key + "," + c1 + liste[key]["posx"] + ");entity_translation_y(entityid" + key + "," + c1 + liste[key]["posy"] + ");entity_translation_z(entityid" + key + "," + c1 +  liste[key]["posz"] + ");")
+					#print gothere
+#start loop rendering
+                f.write(buff2)
+                for key in liste:
+					if ('-' in liste[key]["rotx"]):
+						c1 = '-'
+						liste[key]["rotx"] = str(int(liste[key]["rotx"]) * -1)
+					else:
+						c1 = ''
+					if ('-' in liste[key]["roty"]):
+						c2 = '-'
+						liste[key]["roty"] = str(int(liste[key]["roty"]) * -1)
+					else:
+						c2 = ''
+					if ('-' in liste[key]["rotz"]):
+						liste[key]["rotz"] = str(int(liste[key]["rotz"]) * -1)
+						c3 = '-'
+					else:
+						c3 = ''
+					gothere2 = " render_entity(entityid" + key + ");  entity_rotation_x(entityid" + key + "," + c1 + "0.00" + liste[key]["rotx"] + "); entity_rotation_y(entityid" + key + "," + c2 + "0.00" + liste[key]["roty"] + ");entity_rotation_z(entityid" + key + "," + c3 + "0.00" + liste[key]["rotz"] + ");"
+					#print gothere2
+					f.write(gothere2)
+#end loop rendering
+                f.write(buff3)
+                # subprocess.call("touch srcs/m
+                # os.system("reset");
+                # os.system("make");
+            except OSError, ose:
+                view.set_header(urwid.AttrWrap(urwid.Text(
+                    'error starting %s: %s' % (str(focus), str(ose))), 'head'))
+                raise urwid.ExitMainLoop()
+            raise urwid.ExitMainLoop()
+
+    items = []
+    game_keys = sorted(games.keys())
+    for i, k in enumerate(game_keys):
+        items.append(ItemWidget(i, k))
+    header = urwid.AttrMap(urwid.Text('selected:'), 'head')
+    listbox = urwid.ListBox(urwid.SimpleListWalker(items))
+    view = urwid.Frame(urwid.AttrWrap(listbox, 'body'), header=header)
+    loop = urwid.MainLoop(view, palette, unhandled_input=keystroke)
+    loop.run()
+
+if __name__ == '__main__':
+    main()
+

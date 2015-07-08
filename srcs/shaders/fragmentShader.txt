@@ -1,0 +1,20 @@
+#version 400 core
+
+in vec2 pass_texturecoords;
+in vec3 color;
+
+out vec4 out_color;
+
+uniform sampler2D texturesampler;
+uniform float ratio;
+
+void main(void) {
+	vec4 text_color;
+	vec4 color_color;
+
+	text_color = texture(texturesampler, pass_texturecoords);
+	color_color = vec4(color, 1.0);
+	out_color.x = (text_color.x * ratio) + (color_color.x * (1 - ratio));
+	out_color.y = (text_color.y * ratio) + (color_color.y * (1 - ratio));
+	out_color.z = (text_color.z * ratio) + (color_color.z * (1 - ratio));
+}

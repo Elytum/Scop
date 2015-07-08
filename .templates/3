@@ -1,0 +1,6 @@
+
+		render_flush();
+	}
+	scop_end();
+	return 0;
+}

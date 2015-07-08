@@ -1,0 +1,81 @@
+#include <config.h>
+
+#include <scop.h>
+#include <vec.h>
+#include <matrix.h>
+
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+
+#include <time.h>
+#include <camera.h>
+#include <window.h>
+#include <config.h>
+
+#include <texture.h>
+
+ssize_t		create_texture(char *path)
+{
+	extern	t_tables	g_textures;
+	GLuint				textureid;
+	ssize_t				position;
+	char				error;
+
+	textureid = bmpload(path, &error);
+	if (error)
+		return (-1);
+	position = table_add(&g_textures, (ssize_t)textureid);
+	return (position);
+}
+
+static void	setup_camera(void)
+{
+	set_camera_position(0, 0, 2);
+	set_camera_pitch(0);
+	set_camera_yaw(0);
+	set_camera_roll(0);
+}
+
+int			main (void)
+{
+	ssize_t			modelid;
+//	ssize_t			modelid2;
+	ssize_t			entityid;
+//	ssize_t			entityid2;
+	ssize_t			programid;
+	ssize_t			textureid;
+//	ssize_t			textureid2;
+
+	if (!scop_init())
+		return (0);
+	setup_camera();
+	modelid = create_model("./objs/geogreymon.obj");
+	// modelid2 = create_model("objs/charizard.obj");
+	programid = create_shader("srcs/shaders/vertexShader.txt",
+								"srcs/shaders/fragmentShader.txt");
+	textureid = create_texture("textures/poney.bmp");
+	// textureid2 = create_texture("textures/fire.bmp");
+	entityid = create_entity(modelid, programid, textureid);
+	// entityid2 = create_entity(modelid2, programid, textureid2);
+
+	// int i = 0;
+	while (keep_looping())
+	{
+		render_init();
+		//render_group(entityid2);
+		render_entity(entityid);
+		// if (i == 100)
+		// 	replace_texture(entityid, textureid2);
+		// if (i == 200)
+		// {
+		// 	replace_texture(entityid, textureid);
+		// 	i = 0;
+		// }
+		// i++;
+		render_flush();
+	}
+	scop_end();
+	return 0;
+}
+

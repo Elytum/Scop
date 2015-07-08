@@ -1,0 +1,34 @@
+#include <config.h>
+
+#include <scop.h>
+#include <vec.h>
+#include <matrix.h>
+
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+
+#include <time.h>
+#include <camera.h>
+#include <window.h>
+#include <config.h>
+
+#include <texture.h>
+
+static void	setup_camera(void)
+{
+	set_camera_position(0, 0, 40);
+	set_camera_pitch(0);
+	set_camera_yaw(0);
+	set_camera_roll(0);
+}
+
+int			main (void)
+{
+	ssize_t			programid;
+
+	if (!scop_init())
+		return (0);
+	setup_camera();
+	programid = create_shader("srcs/shaders/vertexShader.txt",
+								"srcs/shaders/fragmentShader.txt");

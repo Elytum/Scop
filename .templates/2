@@ -1,0 +1,4 @@
+
+	while (keep_looping())
+	{
+		render_init(.27, .27, .27, 1);
